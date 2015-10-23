@@ -1,0 +1,10 @@
+.artimg {
+  max-width: 350px;
+  padding: 15px;
+}
+#imgholder{
+  text-align: center;
+}
+#imgholder img{
+  display: inline-block;
+}
