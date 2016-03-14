@@ -20,7 +20,7 @@ body {
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1000px) {
   body {
     text-align: center;
     padding-left: 4%;
