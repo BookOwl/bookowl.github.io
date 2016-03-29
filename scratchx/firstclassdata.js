@@ -64,7 +64,7 @@ data = Object.create(null);
          return data[id].val.length;
      }
      ext.delete_item = function(index, id){
-         data[id].val.splice(index, 1)
+         data[id].val.splice(index-1, 1)
      }
      ext.as_json = function(id){
         var obj = data[id];
