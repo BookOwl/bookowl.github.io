@@ -17,9 +17,6 @@ body {
   .moved {
     font-size: 1.7em;
   }
-  h1, h2 {
-    text-shadow: 10px 7px 7px black;
-  }
 }
 
 @media (max-width: 1000px) {
@@ -30,9 +27,6 @@ body {
   }
   p {
     padding-left: 0;
-  }
-  h1, h2 {
-    text-shadow: initial;
   }
 }
 
