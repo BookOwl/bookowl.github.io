@@ -12,7 +12,7 @@ data = Object.create(null);
     nextobjid = 1;
     var convertval = function(val){
         if (val[0] == '"' || val[0] == "'") {
-            return {type:'str', val:eval(val)} 
+            return {type:'str', val:'"'+eval(val)+'"'} 
         }else if (/^\d+$/.exec(val)){
             return {type:'num', val:parseInt(val)} 
         }else if (/^\d+\.\d+$/.exec(val)) {
