@@ -81,7 +81,7 @@ data = Object.create(null);
             [' ', 'set item %n of list %s to %s', 'set_item'],
             [' ', 'add %s to list %s', 'add_item'],
             ['r', 'length of list %s', 'list_length'],
-            [' ', 'delete item %n of list %s', 'delete_item']
+            [' ', 'delete item %n of list %s', 'delete_item'],
             ['r', 'object %s as JSON', 'as_json']
         ]
     };
