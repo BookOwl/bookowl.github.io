@@ -59,7 +59,12 @@ data = Object.create(null);
         var l = data[id].val;
         l.push(convertval(val))
      }
-     
+     ext.list_length = function(id){
+         return data[id].val.length;
+     }
+     ext.delete_item = function(index, id){
+         data[id].val.splice(index, 1)
+     }
      ext.as_json = function(id){
         var obj = data[id];
         obj = JSON.parse(JSON.stringify(obj))
@@ -71,11 +76,13 @@ data = Object.create(null);
     var descriptor = {
         blocks: [
            // ['r', 'Color %c', 'color'],
-            ['r', 'Create List', 'create_list'],
-            ['r', 'Item %n of List %s', 'item_of_list'],
-            [' ', 'Set item %n of List %s to %s', 'set_item'],
-            [' ', 'Add %s to List %s', 'add_item'],
-            ['r', 'Object %s as JSON', 'as_json']
+            ['r', 'create list', 'create_list'],
+            ['r', 'item %n of list %s', 'item_of_list'],
+            [' ', 'set item %n of list %s to %s', 'set_item'],
+            [' ', 'add %s to list %s', 'add_item'],
+            ['r', 'length of list %s', 'list_length'],
+            [' ', 'delete item %n of list %s', 'delete_item']
+            ['r', 'object %s as JSON', 'as_json']
         ]
     };
 
