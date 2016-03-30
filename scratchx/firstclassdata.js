@@ -13,18 +13,39 @@ var clean = function(obj){
     }
     return clean(obj.val);
 }
+var convert = function(obj){
+    if (typeof obj != "object"){
+        return obj
+    }else if (obj.map){
+        var l = obj.map(convert)
+        var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
+        data[id] = {type:"obj", id:id, val:l};
+        nextobjid++;
+        return id
+    }else {
+        var keys = Object.keys(obj);
+        var newobj = {};
+        keys.forEach(function(key){
+            newobj[key] = convert(obj[key])
+        });
+        var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
+        data[id] = {type:"obj", id:id, val:newobj};
+        nextobjid++;
+        return id
+    }
+}
 data = Object.create(null);
 (function(ext) {
     nextobjid = 1;
     var convertval = function(val){
-        if (val[0] == '"' || val[0] == "'") {
-            return {type:'str', val:eval(val)} 
+        if (val.startsWith("--#firstclassdata#--#obj#--#id#")) {
+            return data[val]
         }else if (/^\d+$/.exec(val)){
             return {type:'num', val:parseInt(val)} 
         }else if (/^\d+\.\d+$/.exec(val)) {
             return {type:'num', val:parseFloat(val)} 
         }else {
-            return data[val]
+            return {type:"str", val: val}
         }
     }
     // Cleanup function when the extension is unloaded
@@ -39,7 +60,7 @@ data = Object.create(null);
     ext.color = function(color){return color;}
     
     ext.create_list = function(){
-        var id = "obj" + nextobjid;
+        var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
         data[id] = {type:"obj", id:id, val:[]};
         nextobjid++;
         return id;
@@ -53,7 +74,6 @@ data = Object.create(null);
             return i.id;
         }else {
             console.log("Returning a val")
-            if (i.type == "str") return '"'+i.val+'"';
             return i.val;
         }
         console.log("Shouldn't be reached")
@@ -66,6 +86,10 @@ data = Object.create(null);
         var l = data[id].val;
         l.push(convertval(val))
      }
+     ext.insert_item = function(val, index, id){
+         var l = data[id].val;
+         l.splice(index-1, 0, convertval(val))
+     }
      ext.list_length = function(id){
          return data[id].val.length;
      }
@@ -73,31 +97,37 @@ data = Object.create(null);
          data[id].val.splice(index-1, 1)
      }
      ext.create_obj = function(){
-         var id = "obj" + nextobjid;
+        var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
         data[id] = {type:"obj", id:id, val:Object.create(null)};
         nextobjid++;
         return id;
      }
      ext.set_prop = function(prop, id, val){
         var l = data[id].val;
-        var p = eval(prop)
+        var p = prop
         l[p] = convertval(val)
      }
      ext.item_of_obj = function(prop, id){
         var l = data[id].val;
-        var i = l[eval(prop)];
+        var i = l[prop];
         if (i.type == 'obj'){
             return i.id;
         }else {
-            if (i.type == "str") return '"'+i.val+'"';
             return i.val;
         }
+     }
+     ext.delete_prop = function(prop, id){
+         delete data[id][prop]
      }
      ext.as_json = function(id){
         var obj = data[id];
         obj = JSON.parse(JSON.stringify(obj))
         obj = clean(obj)
         return JSON.stringify(obj)
+     }
+     ext.from_json = function(json){
+         obj = JSON.parse(json)
+         return convert(obj)
      }
     
     // Block and block menu descriptions
@@ -108,12 +138,15 @@ data = Object.create(null);
             ['r', 'item %n of list %s', 'item_of_list'],
             [' ', 'set item %n of list %s to %s', 'set_item'],
             [' ', 'add %s to list %s', 'add_item'],
+            [' ', 'insert %s at %n of list %s', 'insert_item'],
             ['r', 'length of list %s', 'list_length'],
             [' ', 'delete item %n of list %s', 'delete_item'],
             ['r', 'create object', 'create_obj'],
-            [' ', 'set %s of object %s to %s', 'set_prop'],
+            [' ', 'set property %s of object %s to %s', 'set_prop'],
             ['r', 'property %s of object %s', 'item_of_obj'],
-            ['r', 'object %s as JSON', 'as_json']
+            [' ', 'delete property %s of object %s', 'delete_prop'],
+            ['r', 'object %s as JSON', 'as_json'],
+            ['r', 'create object from JSON %s', 'from_json']
         ]
     };
 
