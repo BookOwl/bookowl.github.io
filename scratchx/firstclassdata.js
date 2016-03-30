@@ -1,44 +1,52 @@
-var clean = function(obj){
-    if (obj.type == undefined){
-        var keys = Object.keys(obj);
-        var newobj = {};
-        keys.forEach(function(key){newobj[key] = clean(obj[key])});
-        return newobj;
-    }
-    if (obj.type != "obj"){
-        return obj.val;
-    }
-    if (obj.val.map){
-        return obj.val.map(clean);
-    }
-    return clean(obj.val);
-}
-var convert = function(obj){
-    if (typeof obj != "object"){
-        return obj
-    }else if (obj.map){
-        var l = obj.map(convert)
-        var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
-        data[id] = {type:"obj", id:id, val:l};
-        nextobjid++;
-        return id
-    }else {
-        var keys = Object.keys(obj);
-        var newobj = {};
-        keys.forEach(function(key){
-            newobj[key] = convert(obj[key])
-        });
-        var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
-        data[id] = {type:"obj", id:id, val:newobj};
-        nextobjid++;
-        return id
-    }
-}
-data = Object.create(null);
 (function(ext) {
+    var clean = function(obj){
+        if (typeof obj == "string" && obj.startsWith("--#firstclassdata#--#obj#--#id#")) {
+            console.log("Cleaning data["+obj+"]")
+            return clean(data[obj])
+        }
+        if (obj.type != "obj" && typeof obj != "object"){
+            console.log("Cleaning normal data", obj)
+            return obj;
+        }
+        if (obj.type == undefined){
+            console.log("Cleaning normal object", obj)
+            var keys = Object.keys(obj);
+            var newobj = {};
+            keys.forEach(function(key){newobj[key] = clean(obj[key])});
+            return newobj;
+        }
+        if (obj.val.map){
+            console.log("Cleaning array", obj.val)
+            return obj.val.map(clean);
+        }
+        console.log("Cleaning object", obj.val)
+        return clean(obj.val);
+    }
+    var convert = function(obj){
+        if (typeof obj != "object"){
+            return obj
+        }else if (obj.map){
+            var l = obj.map(convert)
+            var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
+            data[id] = {type:"obj", id:id, val:l};
+            nextobjid++;
+            return id
+        }else {
+            var keys = Object.keys(obj);
+            var newobj = {};
+            keys.forEach(function(key){
+                newobj[key] = convert(obj[key])
+            });
+            var id = "--#firstclassdata#--#obj#--#id#" + nextobjid;
+            data[id] = {type:"obj", id:id, val:newobj};
+            nextobjid++;
+            return id
+        }
+    }
+    data = Object.create(null);
     nextobjid = 1;
     var convertval = function(val){
-        if (val.startsWith("--#firstclassdata#--#obj#--#id#")) {
+        if (typeof val == "string" && val.startsWith("--#firstclassdata#--#obj#--#id#")) {
             return data[val]
         }else if (/^\d+$/.exec(val)){
             return {type:'num', val:parseInt(val)} 
@@ -129,7 +137,6 @@ data = Object.create(null);
          obj = JSON.parse(json)
          return convert(obj)
      }
-    
     // Block and block menu descriptions
     var descriptor = {
         blocks: [
