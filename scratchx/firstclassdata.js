@@ -1,4 +1,10 @@
 var clean = function(obj){
+    if (obj.type == undefined){
+        var keys = Object.keys(obj);
+        var newobj = {};
+        keys.forEach(function(key){newobj[key] = clean(obj[key])});
+        return newobj;
+    }
     if (obj.type != "obj"){
         return obj.val;
     }
@@ -66,6 +72,27 @@ data = Object.create(null);
      ext.delete_item = function(index, id){
          data[id].val.splice(index-1, 1)
      }
+     ext.create_obj = function(){
+         var id = "obj" + nextobjid;
+        data[id] = {type:"obj", id:id, val:Object.create(null)};
+        nextobjid++;
+        return id;
+     }
+     ext.set_prop = function(prop, id, val){
+        var l = data[id].val;
+        var p = eval(prop)
+        l[p] = convertval(val)
+     }
+     ext.item_of_obj = function(prop, id){
+        var l = data[id].val;
+        var i = l[eval(prop)];
+        if (i.type == 'obj'){
+            return i.id;
+        }else {
+            if (i.type == "str") return '"'+i.val+'"';
+            return i.val;
+        }
+     }
      ext.as_json = function(id){
         var obj = data[id];
         obj = JSON.parse(JSON.stringify(obj))
@@ -83,6 +110,9 @@ data = Object.create(null);
             [' ', 'add %s to list %s', 'add_item'],
             ['r', 'length of list %s', 'list_length'],
             [' ', 'delete item %n of list %s', 'delete_item'],
+            ['r', 'create object', 'create_obj'],
+            [' ', 'set %s of object %s to %s', 'set_prop'],
+            ['r', 'property %s of object %s', 'item_of_obj'],
             ['r', 'object %s as JSON', 'as_json']
         ]
     };
