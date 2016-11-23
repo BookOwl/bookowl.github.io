@@ -12,6 +12,9 @@ I've finally decided to create a blog. I've thought about doing it before, but I
 #### Why did I pick the name My::thoughts()?
 I decided to use the name My::thoughts() because this blog is going to be about my thoughts (duh), and I converted it into pseudo-rust.
 
+#### What am I going to write about?
+I will be mostly writing about programming and computers, but there will probably be a few posts about my life, world events, and religion.
+
 #### Technical details
 In case your interested, here are the technical details about how I'm creating and hosting this blog.
 
